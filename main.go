@@ -116,4 +116,7 @@ func main() {
 		fmt.Println(weaponSkin.Data.DisplayName)
 	}
 
+	fmt.Println("Press the enter key to exit...")
+	fmt.Scanln()
+
 }
