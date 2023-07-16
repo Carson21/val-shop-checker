@@ -37,15 +37,24 @@ func main() {
 	var code string
 
 	fmt.Println("Input your username: ")
-	fmt.Scanln(&username)
+	_, err := fmt.Scanln(&username)
+	if err != nil {
+		return
+	}
 	fmt.Println("Input your password: ")
-	fmt.Scanln(&password)
+	_, err = fmt.Scanln(&password)
+	if err != nil {
+		return
+	}
 
 	// Authorize
 	data, err := client.Authorize(username, password)
 	if err == valorant.ErrorRiotMultifactor {
-		fmt.Println("Input your multifactor code: ")
-		fmt.Scanln(&code)
+		fmt.Println("Input your multi-factor code: ")
+		_, err := fmt.Scanln(&code)
+		if err != nil {
+			return
+		}
 
 		data, err = client.SubmitTwoFactor(code)
 	} else if err != nil {
@@ -64,7 +73,10 @@ func main() {
 	}
 	defer resp.Body.Close()
 	body := new(UserInfoResp)
-	json.NewDecoder(resp.Body).Decode(body)
+	err = json.NewDecoder(resp.Body).Decode(body)
+	if err != nil {
+		return
+	}
 	userId := body.UserId
 
 	// Get entitlements token
@@ -80,7 +92,10 @@ func main() {
 	}
 	defer resp.Body.Close()
 	entitlementsBody := new(EntitlementsResp)
-	json.NewDecoder(resp.Body).Decode(entitlementsBody)
+	err = json.NewDecoder(resp.Body).Decode(entitlementsBody)
+	if err != nil {
+		return
+	}
 	entitlementsToken := entitlementsBody.EntitlementsToken
 
 	// Get store
@@ -96,7 +111,10 @@ func main() {
 	}
 	defer resp.Body.Close()
 	storeBody := new(StoreResponse)
-	json.NewDecoder(resp.Body).Decode(storeBody)
+	err = json.NewDecoder(resp.Body).Decode(storeBody)
+	if err != nil {
+		return
+	}
 
 	// Get weapon skin display names and print them
 	for _, offer := range storeBody.SkinsPanelLayout.SingleItemOffers {
@@ -110,13 +128,16 @@ func main() {
 			panic(err)
 		}
 
-		defer resp.Body.Close()
 		weaponSkin := new(WeaponSkin)
-		json.NewDecoder(resp.Body).Decode(weaponSkin)
+		err = json.NewDecoder(resp.Body).Decode(weaponSkin)
+		resp.Body.Close()
+		if err != nil {
+			return
+		}
 		fmt.Println(weaponSkin.Data.DisplayName)
 	}
 
 	fmt.Println("Press the enter key to exit...")
-	fmt.Scanln()
+	_, _ = fmt.Scanln()
 
 }
