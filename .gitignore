@@ -21,6 +21,7 @@
 go.work
 
 .DS_Store
+.idea
 .idea/workspace.xml
 .idea/val-shop-checker.iml
 .idea/vcs.xml
